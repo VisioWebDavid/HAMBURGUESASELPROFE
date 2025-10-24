@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🍔 Hot Dogs y Hamburguesas — El Profe</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0b;
+    --card:#111214;
+    --accent:#ff2d55; /* rosa fuerte */
+    --gold:#ffb703;
+    --muted:#9aa3ad;
+    --glass:rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Poppins',system-ui,Arial;
+    background:linear-gradient(180deg,#070707 0%, #0f0f10 100%);
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* HEADER */
+  header{
+    position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;padding:14px 18px;background:linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02));
+    border-bottom:1px solid rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+  }
+  .brand{
+    display:flex;gap:12px;align-items:center;
+  }
+  /* LOGO eliminado a pedido - no existe el .logo ahora */
+  h1{font-size:20px;margin:0}
+  .subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+
+  /* menu / carrito button */
+  .controls{display:flex;gap:10px;align-items:center}
+  .icon-btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;border-radius:10px;background:var(--card);border:1px solid rgba(255,255,255,0.03);
+    cursor:pointer;font-size:20px;color:var(--gold);
+    box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  /* LAYOUT */
+  .container{max-width:1100px;margin:22px auto;padding:0 16px}
+  .hero{
+    display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start;
+  }
+  @media(max-width:980px){.hero{grid-template-columns:1fr}}
+  /* CATEGORIAS (tarjetas) */
+  .categories{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    margin-bottom:14px;
+  }
+  @media(max-width:620px){.categories{grid-template-columns:repeat(2,1fr)}}
+  .cat{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
+    transition:transform .28s, box-shadow .28s;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .cat:hover{transform:translateY(-6px);box-shadow:0 14px 40px rgba(0,0,0,0.6)}
+  .cat img{width:100%;height:170px;object-fit:cover;display:block}
+  .cat .label{padding:12px;text-align:center;font-weight:700;color:var(--accent);background:linear-gradient(90deg, rgba(0,0,0,0.02), transparent)}
+
+  /* MAIN CARD (menú + productos) */
+  .main-card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.02)}
+  .menu-title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .menu-title h2{margin:0;color:var(--gold)}
+  .menu-desc{color:var(--muted);font-size:13px;margin-top:6px}
+
+  .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+  @media(max-width:760px){.products-grid{grid-template-columns:1fr}}
+  .product{
+    background:var(--glass);padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px;
+    border:1px solid rgba(255,255,255,0.02)
+  }
+  .product h3{margin:0;color:var(--accent);font-size:16px}
+  .product p{color:var(--muted);font-size:13px;margin:0 0 6px}
+  .product .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .price{font-weight:800;color:var(--gold)}
+  .qty-controls{display:flex;gap:6px;align-items:center}
+  .small-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:#fff;cursor:pointer}
+
+  /* ASIDE (resumen) para pantallas grandes */
+  .aside{
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .card-compact{background:linear-gradient(180deg,#0e0f11,#0b0b0b);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .cart-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cart-items{margin-top:12px;display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto;padding-right:6px}
+  .cart-item{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px dashed rgba(255,255,255,0.02);padding-bottom:8px}
+  .cart-item .name{font-weight:600;color:#fff}
+  .cart-total{font-weight:800;color:var(--gold);text-align:right;margin-top:8px}
+
+  /* CARRITO LATERAL (movil / overlay) */
+  .cart-panel{
+    position:fixed;top:0;right:-100%;width:360px;height:100%;background:linear-gradient(180deg,#0b0b0c,#0b0b0d);
+    box-shadow:-40px 0 80px rgba(0,0,0,0.7);transition:right .34s cubic-bezier(.2,.9,.3,1);z-index:80;padding:18px;display:flex;flex-direction:column;
+  }
+  .cart-panel.open{right:0}
+  .cart-panel header{display:flex;justify-content:space-between;align-items:center}
+  .cart-panel h3{margin:0;color:var(--gold)}
+  .close-cart{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--accent);padding:8px;border-radius:10px;cursor:pointer}
+  .cart-list{margin-top:12px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-right:6px}
+  .cart-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cart-actions{display:flex;gap:8px;margin-top:12px}
+  .btn-primary{background:linear-gradient(90deg,var(--gold),#ffd27a);border:none;padding:12px;border-radius:10px;color:#111;font-weight:800;cursor:pointer;width:100%}
+  .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:#fff;cursor:pointer;width:100%}
+
+  /* small helpers */
+  .muted{color:var(--muted);font-size:13px}
+  .center{display:flex;align-items:center;justify-content:center}
+
+  footer{margin:28px 0 60px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* ORDER FORM (modal) */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:120;
+  }
+  .overlay.open{display:flex}
+  .order-form{
+    background:var(--card);padding:18px;border-radius:12px;width:420px;max-width:94%;box-shadow:0 12px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);
+  }
+  .order-form h3{margin:0 0 8px;color:var(--gold)}
+  .order-form label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+  .order-form input, .order-form select, .order-form textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-top:6px}
+  .order-actions{display:flex;gap:8px;margin-top:12px}
+  .order-actions .btn-outline{flex:1}
+  .order-actions .btn-primary{flex:1}
+  .small-muted{font-size:12px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <!-- LOGO QUITADO: aquí solo queda el título y subtítulo -->
+    <div>
+      <h1>Hot Dogs y Hamburguesas — <strong>El Profe</strong></h1>
+      <div class="subtitle">Sabor casero • Atención rápida • Pide por WhatsApp</div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="icon-btn" title="Abrir carrito" onclick="openCart()">
+      ☰
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <!-- COLUMNA PRINCIPAL -->
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+        <div>
+          <h2 style="margin:0;color:var(--gold)">Menú</h2>
+          <div class="menu-desc muted">Toca una categoría para ver sus productos. Añade al carrito y envía tu pedido por WhatsApp.</div>
+        </div>
+        <div class="muted" style="font-size:13px;text-align:right">Tel: <strong>667 329 9646</strong></div>
+      </div>
+
+      <!-- CATEGORÍAS -->
+      <div class="categories">
+        <div class="cat" onclick="selectCategory('hamburguesas')">
+          <img src="https://i.postimg.cc/Tw4TP9H8/ham1.avif" alt="Hamburguesas">
+          <div class="label">Hamburguesas</div>
+        </div>
+
+        <div class="cat" onclick="selectCategory('hotdogs')">
+          <img src="https://i.postimg.cc/7hrw76D1/hod-dog.avif" alt="Hot Dogs">
+          <div class="label">Hot Dogs</div>
+        </div>
+
+        <div class="cat" onclick="selectCategory('papas')">
+          <img src="https://i.postimg.cc/PJHnJRzR/papasf.jpg" alt="Papas Fritas">
+          <div class="label">Papas & Especiales</div>
+        </div>
+
+        <div class="cat" onclick="selectCategory('bebidas')">
+          <!-- fallback if you uploaded a 4th, replace this URL with your 4th image -->
+          <img src="https://i.postimg.cc/RZNySmx6/coca.jpg" alt="Bebidas">
+          <div class="label">Bebidas</div>
+        </div>
+      </div>
+
+      <!-- CARD donde aparece el menu de la categoria seleccionada -->
+      <div class="main-card" id="menuCard" style="display:none">
+        <div class="menu-title">
+          <div>
+            <h2 id="menuTitle">Categoría</h2>
+            <div id="menuIntro" class="menu-desc">Descripción</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <div class="muted" style="font-size:13px">Ver: <span id="currentCategoryLabel">-</span></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-outline" onclick="clearCategoryView()">Volver</button>
+              <button class="btn-primary" onclick="sendCategoryWhatsApp()">Enviar categoría por WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="productsGrid" class="products-grid" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- ASIDE / RESUMEN -->
+    <aside class="aside">
+      <div class="card-compact">
+        <div class="cart-header">
+          <div>
+            <div class="muted">Resumen</div>
+            <div style="font-weight:800;font-size:18px">Tu pedido</div>
+          </div>
+          <div class="muted">Items: <span id="itemsCount">0</span></div>
+        </div>
+
+        <div class="cart-items" id="cartPreview">
+          <div class="muted center" style="padding:12px">Carrito vacío</div>
+        </div>
+
+        <div class="cart-total" id="cartTotal">Total: $0</div>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn-outline" onclick="openCart()">Abrir carrito</button>
+          <button class="btn-primary" onclick="finalizeCart()">Finalizar (WhatsApp)</button>
+        </div>
+      </div>
+
+      <div class="card-compact">
+        <div style="font-weight:700;color:var(--accent)">Horario</div>
+        <div class="muted" style="margin-top:8px">Lun - Dom: 11:00 - 23:00</div>
+        <div style="height:8px"></div>
+        <div style="font-weight:700;color:var(--accent)">Dirección</div>
+        <div class="muted" style="margin-top:8px">Tu calle 123, Colonia — Ciudad</div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- PANEL CARRITO -->
+<div id="cartPanel" class="cart-panel" aria-hidden="true">
+  <header>
+    <h3>🛒 Tu pedido</h3>
+    <div style="display:flex;gap:8px">
+      <button class="close-cart" onclick="closeCart()">Cerrar ✖</button>
+    </div>
+  </header>
+
+  <div class="cart-list" id="cartList">
+    <div class="muted center" style="padding:12px">Tu carrito está vacío</div>
+  </div>
+
+  <div class="muted" style="margin-top:8px">Detalles</div>
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn-outline" onclick="clearCart()">Vaciar carrito</button>
+    <button class="btn-primary" onclick="finalizeCart()">Enviar por WhatsApp</button>
+  </div>
+
+  <div style="margin-top:14px" id="cartSummary">
+    <div class="muted">Total</div>
+    <div style="font-weight:900;color:var(--gold);font-size:18px" id="cartSum">$0</div>
+  </div>
+</div>
+
+<!-- ORDER FORM MODAL -->
+<div id="orderOverlay" class="overlay" aria-hidden="true">
+  <div class="order-form" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+    <h3 id="orderTitle">Detalles de entrega</h3>
+    <div class="small-muted">Confirma cómo quieres recibir tu pedido y tus datos.</div>
+
+    <label for="orderType">Tipo de entrega</label>
+    <select id="orderType" onchange="orderTypeChanged()">
+      <option value="">-- Selecciona --</option>
+      <option value="recoger">Recoger en el local</option>
+      <option value="domicilio">Servicio a domicilio</option>
+    </select>
+
+    <label for="orderName">Nombre</label>
+    <input id="orderName" type="text" placeholder="Tu nombre">
+
+    <label for="orderPhone">Teléfono</label>
+    <input id="orderPhone" type="tel" placeholder="Tu número (10 dígitos)">
+
+    <div id="orderUbicBox" style="display:none">
+      <label for="orderUbic">Ubicación / Referencia</label>
+      <textarea id="orderUbic" placeholder="Calle, referencia, entre calles..." rows="3"></textarea>
+    </div>
+
+    <div class="order-actions">
+      <button class="btn-outline" onclick="closeOrderForm()">Cancelar</button>
+      <button class="btn-primary" onclick="submitOrderForm()">Enviar por WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © <strong>El Profe</strong> — Hot Dogs & Hamburguesas • Pide por WhatsApp
+</footer>
+
+<script>
+/* ============================
+  Tu código original (sin cambios salvo lo pedido)
+   ============================ */
+const catalog = {
+  hamburguesas: {
+    title: 'Hamburguesas',
+    intro: 'Pan casero, carne jugosa y aderezos al punto. En todas nuestras hamburguesas puedes pedir extras.',
+    items: [
+      { id: 'hb_especial', name: 'Hamburguesa Especial', price: 100,
+        desc: 'Pan casero con carne de res, jamón, queso americano, lechuga, tomate, cebolla caramelizada y papas a la francesa.' },
+      { id: 'hb_normal', name: 'Hamburguesa Normal', price: 85,
+        desc: 'Pan casero con carne de res, queso americano, tomate y lechuga. Clásica y deliciosa.' },
+      { id: 'hb_suprema', name: 'Hamburguesa Suprema', price: 140,
+        desc: 'Doble carne de res, queso extra, tocino crujiente y salchicha, con cebolla caramelizada.' }
+    ]
+  },
+
+  hotdogs: {
+    title: 'Hot Dogs',
+    intro: 'Hot dogs con pan casero y salchichas especiales. Variantes con tocino, queso y salsas caseras.',
+    items: [
+      { id: 'hd_sencillo', name: 'Hot Dog Sencillo', price: 70,
+        desc: 'Pan casero, salchicha envuelta en tocino, cebolla caramelizada, tomate y papas a la francesa.' },
+      { id: 'hd_especial', name: 'Hot Dog Especial', price: 95,
+        desc: 'Salchicha envuelta en tocino y jamón, queso americano, cebolla caramelizada y papas.' },
+      { id: 'hd_embarazado', name: 'Hot Dog Embarazado', price: 120,
+        desc: 'Salchicha para asar con queso envuelta en tocino y jamón, con ingredientes extra.' },
+      { id: 'hd_chiledogo', name: 'Chile Dogo', price: 120,
+        desc: 'Hot dog con chili casero, queso y toppings al estilo El Profe.' }
+    ]
+  },
+
+  papas: {
+    title: 'Papas & Especiales',
+    intro: 'Papas a la francesa, salchipapas y órdenes especiales para acompañar tu pedido.',
+    items: [
+      { id: 'papas_orden', name: 'Orden de Papas', price: 60,
+        desc: 'Porción generosa de papas a la francesa, sal y crujiente.' },
+      { id: 'salchipapas', name: 'Salchi Papas', price: 80,
+        desc: 'Papas a la francesa con salchichas fritas y aderezo.' },
+      { id: 'papas_gratin', name: 'Papas gratinadas con queso', price: 95,
+        desc: 'Papas con queso gratinado y salchichas fritas (opcional).' }
+    ]
+  },
+
+  bebidas: {
+    title: 'Bebidas',
+    intro: 'Refrescos y bebidas para acompañar. Botellas de vidrio disponibles.',
+    items: [
+      { id: 'coca_600', name: 'Coca (vidrio 600ml)', price: 30, desc: 'Coca-Cola en botella de vidrio 600 ml.' },
+      { id: 'manzanita_355', name: 'Manzanita 355ml', price: 15, desc: 'Refresco Manzanita 355 ml.' },
+      { id: 'sprite_355', name: 'Sprite 355ml', price: 15, desc: 'Refresco Sprite 355 ml.' },
+      { id: 'squirt_355', name: 'Squirt 355ml', price: 15, desc: 'Refresco Squirt 355 ml.' }
+    ]
+  }
+};
+
+let cart = [];
+let currentCategory = null;
+function fmt(n){ return Number(n).toFixed(0); }
+
+function selectCategory(key){
+  currentCategory = key;
+  const cat = catalog[key];
+  document.getElementById('menuCard').style.display = 'block';
+  document.getElementById('menuTitle').innerText = cat.title;
+  document.getElementById('menuIntro').innerText = cat.intro;
+  document.getElementById('currentCategoryLabel').innerText = cat.title;
+
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = '';
+  cat.items.forEach(prod=>{
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+      <h3>${prod.name}</h3>
+      <p class="muted">${prod.desc}</p>
+      <div class="row">
+        <div class="price">$${fmt(prod.price)}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="muted" style="font-size:13px">Cant.</div>
+          <input type="number" min="1" value="1" id="q_${prod.id}" style="width:62px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff" />
+          <button class="small-btn" onclick="addToCart('${prod.id}','${escape(prod.name)}',${prod.price})">Agregar</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+
+  setTimeout(()=>document.getElementById('menuCard').scrollIntoView({behavior:'smooth', block:'start'}), 80);
+}
+
+function clearCategoryView(){
+  currentCategory = null;
+  document.getElementById('menuCard').style.display = 'none';
+}
+
+function addToCart(id, nameEscaped, price){
+  const name = decodeURIComponent(nameEscaped);
+  const qInput = document.getElementById('q_' + id);
+  let qty = 1;
+  if(qInput) qty = Math.max(1, parseInt(qInput.value || 1));
+  const existing = cart.find(i => i.id === id);
+  if(existing){
+    existing.qty += qty;
+  } else {
+    cart.push({id, name, price: Number(price), qty});
+  }
+  renderCartPreview();
+  toast(`${name} agregado (x${qty})`);
+}
+
+function renderCartPreview(){
+  const preview = document.getElementById('cartPreview');
+  const list = document.getElementById('cartList');
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('itemsCount').innerText = count;
+  if(cart.length === 0){
+    preview.innerHTML = '<div class="muted center" style="padding:12px">Carrito vacío</div>';
+    list.innerHTML = '<div class="muted center" style="padding:12px">Tu carrito está vacío</div>';
+    updateTotals();
+    return;
+  }
+  preview.innerHTML = '';
+  list.innerHTML = '';
+  cart.forEach((it, idx)=>{
+    const p = document.createElement('div');
+    p.className = 'cart-item';
+    p.innerHTML = `<div style="display:flex;flex-direction:column">
+                     <div class="name">${it.name}</div>
+                     <div class="muted" style="font-size:12px">x${it.qty} • $${fmt(it.price)}</div>
+                   </div>
+                   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                     <div style="font-weight:800;color:var(--gold)">$${fmt(it.price * it.qty)}</div>
+                     <div style="display:flex;gap:6px">
+                       <button class="small-btn" onclick="changeQty(${idx}, -1)">-</button>
+                       <button class="small-btn" onclick="changeQty(${idx}, 1)">+</button>
+                       <button class="small-btn" onclick="removeItem(${idx})">Eliminar</button>
+                     </div>
+                   </div>`;
+    preview.appendChild(p);
+
+    const r = document.createElement('div');
+    r.className = 'cart-row';
+    r.innerHTML = `<div style="flex:1">
+                     <div style="font-weight:700">${it.name}</div>
+                     <div class="muted" style="font-size:13px">Cantidad: ${it.qty}</div>
+                   </div>
+                   <div style="text-align:right">
+                     <div style="font-weight:900;color:var(--gold);">$${fmt(it.price * it.qty)}</div>
+                     <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px">
+                       <button class="small-btn" onclick="changeQty(${idx}, -1)">-</button>
+                       <button class="small-btn" onclick="changeQty(${idx}, 1)">+</button>
+                       <button class="small-btn" onclick="removeItem(${idx})">🗑️</button>
+                     </div>
+                   </div>`;
+    list.appendChild(r);
+  });
+  updateTotals();
+}
+
+function changeQty(index, delta){
+  if(!cart[index]) return;
+  cart[index].qty += delta;
+  if(cart[index].qty <= 0) cart.splice(index,1);
+  renderCartPreview();
+}
+
+function removeItem(index){
+  if(!cart[index]) return;
+  cart.splice(index,1);
+  renderCartPreview();
+}
+
+function clearCart(){
+  if(!confirm('¿Vaciar todo el carrito?')) return;
+  cart = [];
+  renderCartPreview();
+}
+
+function updateTotals(){
+  const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
+  document.getElementById('cartTotal').innerText = 'Total: $' + fmt(total);
+  document.getElementById('cartSum').innerText = '$' + fmt(total);
+}
+
+function openCart(){
+  document.getElementById('cartPanel').classList.add('open');
+  document.getElementById('cartPanel').setAttribute('aria-hidden','false');
+}
+function closeCart(){
+  document.getElementById('cartPanel').classList.remove('open');
+  document.getElementById('cartPanel').setAttribute('aria-hidden','true');
+}
+
+/* ---------- CAMBIO: ahora finalizeCart abre el formulario de orden ---------- */
+function finalizeCart(){
+  if(cart.length === 0){ alert('El carrito está vacío. Agrega productos.'); return; }
+  openOrderForm();
+}
+
+/* enviar solo la categoria visible */
+function sendCategoryWhatsApp(){
+  if(!currentCategory){ alert('Selecciona primero una categoría.'); return; }
+  const catIds = catalog[currentCategory].items.map(i=>i.id);
+  const inCart = cart.filter(i => catIds.includes(i.id));
+  let lines = [];
+  if(inCart.length > 0){
+    lines = inCart.map(i => `${i.qty} x ${i.name} - $${fmt(i.price)} c/u -> $${fmt(i.price * i.qty)}`);
+  } else {
+    lines = catalog[currentCategory].items.map(i => `1 x ${i.name} - $${fmt(i.price)}`);
+  }
+  const total = lines.reduce((s,ln)=>{
+    const m = ln.match(/\$(\d+)/);
+    return s + (m ? Number(m[1]) : 0);
+  },0);
+  const resumen = lines.join('%0A');
+  const mensaje = `Pedido - ${catalog[currentCategory].title} (El Profe):%0A${resumen}%0A%0ATotal aproximado: $${fmt(total)}%0A%0ANombre:%0ATel:%0APreferencia: envio/recoger`;
+  const wa = '526677975519';
+  const url = `https://wa.me/${wa.replace(/[^0-9]/g,'')}?text=${mensaje}`;
+  window.open(url,'_blank');
+}
+
+/* helpers: notificaciones simples */
+function toast(text){
+  const el = document.createElement('div');
+  el.textContent = text;
+  Object.assign(el.style, {
+    position: 'fixed', left: '50%', transform: 'translateX(-50%)',
+    bottom: '30px', background: '#111', padding: '10px 14px', borderRadius: '10px',
+    zIndex: 200, border: '1px solid rgba(255,255,255,0.04)', color: '#fff', boxShadow:'0 8px 28px rgba(0,0,0,0.6)'
+  });
+  document.body.appendChild(el);
+  setTimeout(()=>{ el.style.transition='all .35s'; el.style.opacity='0'; el.style.bottom='18px' }, 1200);
+  setTimeout(()=>el.remove(), 1600);
+}
+
+/* ---------- NUEVO: funciones para el formulario/modal de pedido ---------- */
+function openOrderForm(){
+  document.getElementById('orderOverlay').classList.add('open');
+  document.getElementById('orderOverlay').setAttribute('aria-hidden','false');
+  // reset fields (no borrar si quieres guardar valores)
+  document.getElementById('orderType').value = '';
+  document.getElementById('orderName').value = '';
+  document.getElementById('orderPhone').value = '';
+  document.getElementById('orderUbic').value = '';
+  document.getElementById('orderUbicBox').style.display = 'none';
+}
+
+function closeOrderForm(){
+  document.getElementById('orderOverlay').classList.remove('open');
+  document.getElementById('orderOverlay').setAttribute('aria-hidden','true');
+}
+
+function orderTypeChanged(){
+  const t = document.getElementById('orderType').value;
+  document.getElementById('orderUbicBox').style.display = t === 'domicilio' ? 'block' : 'none';
+}
+
+function submitOrderForm(){
+  const tipo = document.getElementById('orderType').value;
+  const name = document.getElementById('orderName').value.trim();
+  const phone = document.getElementById('orderPhone').value.trim();
+  const ubic = document.getElementById('orderUbic').value.trim();
+
+  if(!tipo){ alert('Selecciona tipo de entrega (recoger o domicilio).'); return; }
+  if(!name){ alert('Ingresa tu nombre.'); return; }
+  if(!phone){ alert('Ingresa tu teléfono.'); return; }
+  if(tipo === 'domicilio' && !ubic){ alert('Ingresa la ubicación o referencia para el domicilio.'); return; }
+
+  // arma las líneas del pedido
+  const lines = cart.map(i => `${i.qty} x ${i.name} - $${fmt(i.price)} c/u -> $${fmt(i.price * i.qty)}`);
+  const total = fmt(cart.reduce((s,i)=>s + i.price * i.qty, 0));
+  const resumen = lines.join('%0A');
+
+  // crea el mensaje y codifica
+  let mensaje = `Pedido El Profe:%0A${resumen}%0A%0ATotal: $${total}%0A%0APreferencia: ${tipo === 'domicilio' ? 'Domicilio' : 'Recoger'}%0ANombre: ${name}%0ATel: ${phone}`;
+  if(tipo === 'domicilio'){
+    mensaje += `%0AUbicación: ${ubic}`;
+  }
+
+  // número WA (mantuve tu número original)
+  const wa = '526677975519';
+  const url = `https://wa.me/${wa.replace(/[^0-9]/g,'')}?text=${mensaje}`;
+  window.open(url,'_blank');
+
+  // opcional: cerrar modal
+  closeOrderForm();
+  // NOTA: no borro el carrito automáticamente (si quieres que se vacíe, descomenta la línea siguiente)
+  // cart = []; renderCartPreview();
+}
+
+/* Inicia */
+renderCartPreview();
+
+/* Si quieres pre-seleccionar una categoría al cargar, descomenta y edita:
+   selectCategory('hamburguesas');
+*/
+</script>
+</body>
+</html>
