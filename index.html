@@ -236,10 +236,10 @@
 
       <div class="card-compact">
         <div style="font-weight:700;color:var(--accent)">Horario</div>
-        <div class="muted" style="margin-top:8px">Lun - Dom: 11:00 - 23:00</div>
+        <div class="muted" style="margin-top:8px">Vie - Dom: 6:30 pm - 11:30 pm</div>
         <div style="height:8px"></div>
         <div style="font-weight:700;color:var(--accent)">Dirección</div>
-        <div class="muted" style="margin-top:8px">Tu calle 123, Colonia — Ciudad</div>
+        <div class="muted" style="margin-top:8px">Tierra y Libertad #5781 , 5 de Febrero — Culiacan Sinaloa</div>
       </div>
     </aside>
   </div>
@@ -524,7 +524,7 @@ function sendCategoryWhatsApp(){
   },0);
   const resumen = lines.join('%0A');
   const mensaje = `Pedido - ${catalog[currentCategory].title} (El Profe):%0A${resumen}%0A%0ATotal aproximado: $${fmt(total)}%0A%0ANombre:%0ATel:%0APreferencia: envio/recoger`;
-  const wa = '526677975519';
+  const wa = '526673299646';
   const url = `https://wa.me/${wa.replace(/[^0-9]/g,'')}?text=${mensaje}`;
   window.open(url,'_blank');
 }
@@ -588,7 +588,7 @@ function submitOrderForm(){
   }
 
   // número WA (mantuve tu número original)
-  const wa = '526677975519';
+  const wa = '526673299646';
   const url = `https://wa.me/${wa.replace(/[^0-9]/g,'')}?text=${mensaje}`;
   window.open(url,'_blank');
 
@@ -607,4 +607,6 @@ renderCartPreview();
 </script>
 </body>
 </html>
+
+
 
