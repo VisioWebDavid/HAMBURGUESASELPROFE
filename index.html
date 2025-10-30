@@ -319,12 +319,15 @@ const catalog = {
     title: 'Hamburguesas',
     intro: 'Pan casero, carne jugosa y aderezos al punto. En todas nuestras hamburguesas puedes pedir extras.',
     items: [
-      { id: 'hb_especial', name: 'Hamburguesa Especial', price: 100,
-        desc: 'Pan casero con carne de res, jamón, queso americano, lechuga, tomate, cebolla caramelizada y papas a la francesa.' },
       { id: 'hb_normal', name: 'Hamburguesa Normal', price: 85,
-        desc: 'Pan casero con carne de res, queso americano, tomate y lechuga. Clásica y deliciosa.' },
+        desc: 'Pan casero con carne de res, queso americano, tomate y lechuga. Clásica y deliciosa.' }, 
+  { id: 'hb_especial', name: 'Hamburguesa Especial', price: 100,
+        desc: 'Pan casero con carne de res, jamón, queso americano, lechuga, tomate, cebolla caramelizada y papas a la francesa.' },
+       { id: 'hb_hawaiana', name: 'Hamburguesa Hawaiana ', price: 130,
+        desc: 'Pan casero con carne de res, jamón, queso americano, lechuga, tomate, cebolla caramelizadaNy una rodaja de piña asada. ' },
       { id: 'hb_suprema', name: 'Hamburguesa Suprema', price: 140,
         desc: 'Doble carne de res, queso extra, tocino crujiente y salchicha, con cebolla caramelizada.' }
+       
     ]
   },
 
@@ -609,9 +612,53 @@ renderCartPreview();
 /* Si quieres pre-seleccionar una categoría al cargar, descomenta y edita:
    selectCategory('hamburguesas');
 */
+
 </script>
+<!-- Botón para abrir la guía -->
+<button id="btnGuia" style="position:fixed;bottom:20px;right:20px;background:#ff5722;color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;box-shadow:0 0 10px rgba(0,0,0,0.5);z-index:1000;">
+  ¿Cómo usar la app?
+</button>
+
+<!-- Ventana flotante -->
+<div id="modalGuia" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(3px);z-index:2000;justify-content:center;align-items:center;">
+  <div style="background:#1e1e1e;color:#fff;padding:25px;border-radius:15px;width:90%;max-width:500px;box-shadow:0 0 20px rgba(0,0,0,0.6);position:relative;text-align:left;line-height:1.6;">
+    <span id="cerrarGuia" style="position:absolute;top:10px;right:15px;font-size:22px;font-weight:bold;cursor:pointer;color:#ff5722;">✖</span>
+    <h2 style="color:#ff5722;text-align:center;">👨‍🍳 Cómo usar la página</h2>
+    <p><b>1️⃣ Ver el menú:</b> Desliza hacia abajo Daras Click a la IMAGEN de cualquiera de nuestros productos para ver todas las categorías de productos.</p>
+    <p><b>2️⃣ Añadir al carrito:</b> Toca el botón “Añadir” en el producto que quieras pedir.</p>
+    <p><b>3️⃣ Revisar pedido:</b> Abre el carrito arriba "≡" para ver los productos que elegiste.</p>
+    <p><b>4️⃣ Eliminar algo:</b> En el carrito, presiona el ícono 🗑️ para quitar un producto.</p>
+    <p><b>5️⃣ Forma de entrega:</b> Elige si recogerás el pedido o si será a domicilio.</p>
+    <p><b>6️⃣ Si es a domicilio:</b> Ingresa tu ubicación, tu nombre y celular.</p>
+    <p><b>7️⃣ Enviar pedido:</b> Da clic en “Enviar pedido por WhatsApp” y se abrirá tu chat con el pedido listo para enviar ✅.</p>
+    <p style="text-align:center;color:#aaa;font-size:14px;margin-top:10px;">¡Listo! Disfruta tu comida 🍔🌭</p>
+  </div>
+</div>
+
+<script>
+  const btnGuia = document.getElementById('btnGuia');
+  const modalGuia = document.getElementById('modalGuia');
+  const cerrarGuia = document.getElementById('cerrarGuia');
+
+  btnGuia.addEventListener('click', () => {
+    modalGuia.style.display = 'flex';
+  });
+
+  cerrarGuia.addEventListener('click', () => {
+    modalGuia.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modalGuia) {
+      modalGuia.style.display = 'none';
+    }
+  });
+</script>
+
 </body>
 </html>
+
+
 
 
 
